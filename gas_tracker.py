@@ -6,22 +6,26 @@ import time
 network.connect('arbitrum-main')
 
 graph_width = timedelta(days=1).total_seconds()
-points_x_count = 24*60*60
+points_x_count = 24*60 # amount of measurements for given graph width
 sleep_time = graph_width/points_x_count
 
 plt.title(network.show_active() + " gas history for last 24 hours")
 plt.ylabel("Gas price")
 
-x = []
-y = []
+x, y = [], []
 
 while True:    
     plt.clear_terminal()
     plt.clear_data()    
     #plt.plot_size(width=plt.terminal_width(), height=plt.terminal_height())    
 
-    date_time = int(datetime.now().timestamp())
-    gas_price = float(web3.fromWei(web3.eth.gasPrice, 'gwei'))
+    date_time, gas_price = None, None    
+    while gas_price is None:
+        try:                
+            date_time = int(datetime.now().timestamp())
+            gas_price = float(web3.fromWei(web3.eth.gas_price, 'gwei'))
+        except Exception as e:
+            print(f'Getting gas price caused error {e}')    
         
     x.append(date_time)    
     y.append(gas_price)
